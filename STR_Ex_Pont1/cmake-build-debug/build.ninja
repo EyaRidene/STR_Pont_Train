@@ -39,7 +39,7 @@ include CMakeFiles/rules.ninja
 #############################################
 # Logical path to working directory; prefix for absolute paths.
 
-cmake_ninja_workdir = C$:/Users/Eya$ Ridene/Desktop/Eya/GL4$ sem1/Système$ temps$ réel/STR_Ex_Pont1/cmake-build-debug/
+cmake_ninja_workdir = C$:/EX_Pont_train/STR_Ex_Pont1/cmake-build-debug/
 # =============================================================================
 # Object build statements for EXECUTABLE target Ex_Pont
 
@@ -49,7 +49,7 @@ cmake_ninja_workdir = C$:/Users/Eya$ Ridene/Desktop/Eya/GL4$ sem1/Système$ temps
 
 build cmake_object_order_depends_target_Ex_Pont: phony || CMakeFiles/Ex_Pont.dir
 
-build CMakeFiles/Ex_Pont.dir/main.c.obj: C_COMPILER__Ex_Pont_Debug C$:/Users/Eya$ Ridene/Desktop/Eya/GL4$ sem1/Système$ temps$ réel/STR_Ex_Pont1/main.c || cmake_object_order_depends_target_Ex_Pont
+build CMakeFiles/Ex_Pont.dir/main.c.obj: C_COMPILER__Ex_Pont_Debug C$:/EX_Pont_train/STR_Ex_Pont1/main.c || cmake_object_order_depends_target_Ex_Pont
   DEP_FILE = CMakeFiles\Ex_Pont.dir\main.c.obj.d
   FLAGS = -g -std=gnu99
   OBJECT_DIR = CMakeFiles\Ex_Pont.dir
@@ -81,7 +81,7 @@ build Ex_Pont.exe: C_EXECUTABLE_LINKER__Ex_Pont_Debug CMakeFiles/Ex_Pont.dir/mai
 # Utility command for edit_cache
 
 build CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D "C:\Users\Eya Ridene\Desktop\Eya\GL4 sem1\Système temps réel\STR_Ex_Pont1\cmake-build-debug" && "C:\Users\Eya Ridene\AppData\Local\JetBrains\CLion 2021.3.4\bin\cmake\win\bin\cmake.exe" -E echo "No interactive CMake dialog available.""
+  COMMAND = cmd.exe /C "cd /D C:\EX_Pont_train\STR_Ex_Pont1\cmake-build-debug && "C:\Users\Eya Ridene\AppData\Local\JetBrains\CLion 2021.3.4\bin\cmake\win\bin\cmake.exe" -E echo "No interactive CMake dialog available.""
   DESC = No interactive CMake dialog available...
   restat = 1
 
@@ -92,7 +92,7 @@ build edit_cache: phony CMakeFiles/edit_cache.util
 # Utility command for rebuild_cache
 
 build CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D "C:\Users\Eya Ridene\Desktop\Eya\GL4 sem1\Système temps réel\STR_Ex_Pont1\cmake-build-debug" && "C:\Users\Eya Ridene\AppData\Local\JetBrains\CLion 2021.3.4\bin\cmake\win\bin\cmake.exe" --regenerate-during-build -S"C:\Users\Eya Ridene\Desktop\Eya\GL4 sem1\Système temps réel\STR_Ex_Pont1" -B"C:\Users\Eya Ridene\Desktop\Eya\GL4 sem1\Système temps réel\STR_Ex_Pont1\cmake-build-debug""
+  COMMAND = cmd.exe /C "cd /D C:\EX_Pont_train\STR_Ex_Pont1\cmake-build-debug && "C:\Users\Eya Ridene\AppData\Local\JetBrains\CLion 2021.3.4\bin\cmake\win\bin\cmake.exe" --regenerate-during-build -SC:\EX_Pont_train\STR_Ex_Pont1 -BC:\EX_Pont_train\STR_Ex_Pont1\cmake-build-debug"
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -110,7 +110,7 @@ build Ex_Pont: phony Ex_Pont.exe
 # =============================================================================
 
 #############################################
-# Folder: C:/Users/Eya Ridene/Desktop/Eya/GL4 sem1/Système temps réel/STR_Ex_Pont1/cmake-build-debug
+# Folder: C:/EX_Pont_train/STR_Ex_Pont1/cmake-build-debug
 
 build all: phony Ex_Pont.exe
 

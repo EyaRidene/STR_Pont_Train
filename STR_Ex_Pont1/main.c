@@ -5,124 +5,131 @@
 #include <stdio.h>
 #include <unistd.h>
 
-void* voiture(void* arg);
-void* camion(void* arg);
+// Function prototypes
+void* car(void* arg);
+void* truck(void* arg);
 
-sem_t attendre_voiture;
-sem_t attendre_camion;
+// Semaphores and counters
+sem_t carSemaphore;
+sem_t truckSemaphore;
 
+int truckCount = 0;
+int carCount = 0;
+int weightOnBridge = 0;
 
-int nb_camion=0;
-int nb_voiture=0;
-int poid_sur_pont=0;
+// Mutex for shared resource access
+pthread_mutex_t bridgeMutex;
 
-pthread_mutex_t mutex;
-
-void attendre(double max);
-
-void acceder_au_pont(int poid)
+// Function to control access to the bridge based on vehicle weight
+void enterBridge(int weight)
 {
-    pthread_mutex_lock(&mutex);
+    pthread_mutex_lock(&bridgeMutex);
 
-    if(poid_sur_pont+poid <= 15)
+    if (weightOnBridge + weight <= 15)
     {
-
-
-        poid_sur_pont+=poid;
-        if (poid==5)
-            sem_post(&attendre_voiture);
-        else	sem_post(&attendre_camion);
-    }
-    else	{
-
-        if (poid==5)
-            nb_voiture++;
-        else	nb_camion++;
-    }
-
-    pthread_mutex_unlock(&mutex);
-
-    if(poid==5)
-        sem_wait(&attendre_voiture);
-    else	sem_wait(&attendre_camion);
-}
-
-void quitter_le_pont(int poid)
-{
-    pthread_mutex_lock(&mutex);
-
-
-    poid_sur_pont-=poid;
-
-
-    if ( (poid_sur_pont==0) && (nb_camion!=0) )
-    {
-        nb_camion--;
-        sem_post(&attendre_camion);
-        poid_sur_pont=15;
+        weightOnBridge += weight;
+        if (weight == 5)
+            sem_post(&carSemaphore);
+        else
+            sem_post(&truckSemaphore);
     }
     else
+    {
+        if (weight == 5)
+            carCount++;
+        else
+            truckCount++;
+    }
 
-        while ( (poid_sur_pont < 15) && (nb_voiture>0) && (nb_camion==0) )
+    pthread_mutex_unlock(&bridgeMutex);
+
+    if (weight == 5)
+        sem_wait(&carSemaphore);
+    else
+        sem_wait(&truckSemaphore);
+}
+
+// Function to simulate leaving the bridge and adjusting counters
+void leaveBridge(int weight)
+{
+    pthread_mutex_lock(&bridgeMutex);
+
+    weightOnBridge -= weight;
+
+    if ((weightOnBridge == 0) && (truckCount != 0))
+    {
+        truckCount--;
+        sem_post(&truckSemaphore);
+        weightOnBridge = 15;
+    }
+    else
+    {
+        while ((weightOnBridge < 15) && (carCount > 0) && (truckCount == 0))
         {
-            nb_voiture--;
-            poid_sur_pont+=5;
-            sem_post(&attendre_voiture);
+            carCount--;
+            weightOnBridge += 5;
+            sem_post(&carSemaphore);
         }
+    }
 
-    pthread_mutex_unlock(&mutex);
+    pthread_mutex_unlock(&bridgeMutex);
 }
 
-void* voiture(void* arg)
+// Function representing the behavior of a car
+void* car(void* arg)
 {
-    int pid=*((int*)arg);
+    int pid = *((int*)arg);
 
     usleep(1000000);
-    acceder_au_pont(5);
-    printf("Le Voiture %d occupe le pont\n",pid);
+    enterBridge(5);
+    printf("Car %d occupies the bridge\n", pid);
     usleep(1000000);
-    printf("Le voiture %d libere le pont\n",pid);
-    quitter_le_pont(5);
+    printf("Car %d releases the bridge\n", pid);
+    leaveBridge(5);
 
     pthread_exit(NULL);
 }
 
-void* camion(void* arg)
+void* truck(void* arg)
 {
-    int pid=*((int*)arg);
+    int pid = *((int*)arg);
 
     usleep(1000000);
-    acceder_au_pont(15);
-    printf("le ccamion %d occupe le pont\n",pid);
+    enterBridge(15);
+    printf("Truck %d occupies the bridge\n", pid);
     usleep(1000000);
-    printf("Le Camion %d libere le pont\n",pid);
-    quitter_le_pont(15);
+    printf("Truck %d releases the bridge\n", pid);
+    leaveBridge(15);
 
     pthread_exit(NULL);
 }
-
 
 int main(int argc, char* argv[])
 {
     srand(time(NULL));
-    pthread_t id;
+    pthread_t threadId;
 
-    sem_init(&attendre_voiture,0,0);
-    sem_init(&attendre_camion,0,0);
-    pthread_mutex_init(&mutex,0);
+    // Initialize semaphores and mutex
+    sem_init(&carSemaphore, 0, 0);
+    sem_init(&truckSemaphore, 0, 0);
+    pthread_mutex_init(&bridgeMutex, 0);
 
-    for (int i=0;i<10;i++){
-        int vehicule = rand() % 2;
-        int* j = (int*)malloc(sizeof(int));
-        *j=i;
-        if (vehicule==1){
-            pthread_create(&id,NULL,camion,j);
+    // Create threads for vehicles
+    for (int i = 0; i < 10; i++)
+    {
+        int vehicleType = rand() % 2;
+        int* vehicleId = (int*)malloc(sizeof(int));
+        *vehicleId = i;
+
+        if (vehicleType == 1)
+        {
+            pthread_create(&threadId, NULL, truck, vehicleId);
         }
-        else{
-            pthread_create(&id,NULL,voiture,j);
-        }}
-
+        else
+        {
+            pthread_create(&threadId, NULL, car, vehicleId);
+        }
+    }
 
     pthread_exit(NULL);
-};
-
+}

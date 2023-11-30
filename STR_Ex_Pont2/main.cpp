@@ -20,6 +20,7 @@ void enterBridge(int vehicle)
         sem_wait(&bridgeSem);
         sem_wait(&bridgeSem);
         sem_wait(&bridgeSem);
+
         pthread_mutex_unlock(&truckMutex);
     }
     else
@@ -42,7 +43,7 @@ void leaveBridge(int vehicle)
     }
 }
 
-void *car(void *arg)
+void* car(void *arg)
 {
     int pid = *((int *)arg);
 

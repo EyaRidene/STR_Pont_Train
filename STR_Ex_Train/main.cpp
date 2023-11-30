@@ -1,21 +1,20 @@
 #include <pthread.h>
-#include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 
-void* MR1(void* arg); //A->D
-void* MR2(void* arg); //F->A
-void* MR3(void* arg); //E->B
+void* MR1(void* arg);
+void* MR2(void* arg);
+void* MR3(void* arg);
 
-//mutex pour chaque segment
 pthread_mutex_t mut_AB;
 pthread_mutex_t mut_BC;
 pthread_mutex_t mut_CD;
-pthread_mutex_t mut_EB;
-pthread_mutex_t mut_FA;
+pthread_mutex_t mut_FB;
+pthread_mutex_t mut_BA;
+pthread_mutex_t mut_EC;
+pthread_mutex_t mut_CB;
 
-//Demander l'acc�s � un segment
-void entrer_segment(char depart, char arrivee)
+void enterSegment(char depart, char arrivee)
 {
     if( depart == 'A' && arrivee =='B' ){
         pthread_mutex_lock(&mut_AB);
@@ -26,18 +25,24 @@ void entrer_segment(char depart, char arrivee)
     else if( depart == 'C' && arrivee =='D' ){
         pthread_mutex_lock(&mut_CD);
     }
-    else if( depart == 'E' && arrivee =='B' ){
-        pthread_mutex_lock(&mut_EB);
+    else if( depart == 'E' && arrivee =='C' ){
+        pthread_mutex_lock(&mut_EC);
+    }
+    else if( depart == 'C' && arrivee =='B' ){
+        pthread_mutex_lock(&mut_CB);
+    }
+    else if( depart == 'F' && arrivee =='B' ){
+        pthread_mutex_lock(&mut_FB);
     }
     else{
-        pthread_mutex_lock(&mut_FA);
+        pthread_mutex_lock(&mut_BA);
     }
 
 }
 
-//Liberer un segment
-void sortir_segment(char depart, char arrivee)
+void outSegment(char depart, char arrivee)
 {
+
     if( depart == 'A' && arrivee =='B' ){
         pthread_mutex_unlock(&mut_AB);
     }
@@ -47,52 +52,62 @@ void sortir_segment(char depart, char arrivee)
     else if( depart == 'C' && arrivee =='D' ){
         pthread_mutex_unlock(&mut_CD);
     }
-    else if( depart == 'E' && arrivee =='B' ){
-        pthread_mutex_unlock(&mut_EB);
+    else if( depart == 'E' && arrivee =='C' ){
+        pthread_mutex_unlock(&mut_EC);
+    }
+    else if( depart == 'C' && arrivee =='B' ){
+        pthread_mutex_unlock((&mut_CB));
+    }
+    else if( depart == 'F' && arrivee =='B' ){
+        pthread_mutex_unlock(&mut_FB);
     }
     else{
-        pthread_mutex_unlock(&mut_FA);
+        pthread_mutex_unlock(&mut_BA);
     }
 }
 
-
-//A->D
 void* MR1(void* arg)
 {
-    entrer_segment('A', 'B');
-    printf("Train %d est dans le segment AB \n", *((int*)(&arg)));
+    enterSegment('A', 'B');
+    printf("Metro %d est dans le segment AB \n", *((int*)(&arg)));
     usleep(600000);
-    sortir_segment('A', 'B');
+    outSegment('A', 'B');
 
-    entrer_segment('B', 'C');
-    printf("Train %d est dans le segment BC \n", *((int*)(&arg)));
+    enterSegment('B', 'C');
+    printf("Metro %d est dans le segment BC \n", *((int*)(&arg)));
     usleep(600000);
-    sortir_segment('B', 'C');
+    outSegment('B', 'C');
 
-    entrer_segment('C', 'D');
-    printf("Train %d est dans le segment CD \n", *((int*)(&arg)));
+    enterSegment('C', 'D');
+    printf("Metro %d est dans le segment CD \n", *((int*)(&arg)));
     usleep(600000);
-    sortir_segment('C', 'D');
+    outSegment('C', 'D');
 
 }
 
-//F->A
 void* MR2(void* arg)
 {
-    entrer_segment('F', 'A');
-    printf("Train %d est dans le segment FA \n",*((int*)(&arg)));
+    enterSegment('F', 'B');
+    printf("Metro %d est dans le segment FB \n",*((int*)(&arg)));
     usleep(600000);
-    sortir_segment('F', 'A');
+    outSegment('F', 'B');
+    enterSegment('B', 'A');
+    printf("Metro %d est dans le segment BA \n",*((int*)(&arg)));
+    usleep(600000);
+    outSegment('B', 'A');
 
 }
 
-//E->B
 void* MR3(void* arg)
 {
-    entrer_segment('E', 'B');
-    printf("Train %d est dans le segment EB \n",*((int*)(&arg)));
+    enterSegment('E', 'C');
+    printf("Metro %d est dans le segment EC \n",*((int*)(&arg)));
     usleep(600000);
-    sortir_segment('E', 'B');
+    outSegment('E', 'C');
+    enterSegment('C', 'B');
+    printf("Metro %d est dans le segment CB \n",*((int*)(&arg)));
+    usleep(600000);
+    outSegment('C', 'B');
 
 }
 
@@ -107,8 +122,11 @@ int main(int argc, char* argv[])
     pthread_mutex_init(&mut_AB,NULL);
     pthread_mutex_init(&mut_BC,NULL);
     pthread_mutex_init(&mut_CD,NULL);
-    pthread_mutex_init(&mut_EB,NULL);
-    pthread_mutex_init(&mut_FA,NULL);
+    pthread_mutex_init(&mut_EC,NULL);
+    pthread_mutex_init(&mut_CB,NULL);
+    pthread_mutex_init(&mut_BA,NULL);
+    pthread_mutex_init(&mut_FB,NULL);
+    pthread_mutex_init(&mut_BA,NULL);
 
 
     pthread_create(&t1, NULL, MR1,(void*) 1);
